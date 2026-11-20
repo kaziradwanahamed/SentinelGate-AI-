@@ -1,0 +1,38 @@
+# Render Blueprint — SentinelGate AI as a single combined web service.
+#
+# The build compiles the React/Vite frontend and installs the FastAPI backend.
+# FastAPI then serves BOTH the JSON API and the built frontend from one origin,
+# so the browser uses relative /api/* URLs (no CORS, no separate frontend host).
+#
+# Deploy: push this repo to GitHub, then in Render choose "New +" → "Blueprint"
+# and point it at the repo. Render reads this file.
+services:
+  - type: web
+    name: sentinelgate-ai
+    runtime: python
+    # A persistent disk (see `disk:` below) requires a paid instance type.
+    # For a free, ephemeral trial, change this to `free` AND delete the `disk:`
+    # block — the SQLite audit log will then reset on every deploy/restart.
+    plan: starter
+    region: oregon
+    rootDir: .
+    buildCommand: "cd frontend && npm ci && npm run build && cd ../backend && pip install -r requirements.txt"
+    startCommand: "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: NODE_VERSION
+        value: "20.18.0"
+      # Keep the lightweight heuristic scanner (no model download at boot).
+      - key: ENABLE_HF_CLASSIFIER
+        value: "false"
+      # Store the SQLite audit log on the mounted persistent disk so it survives
+      # restarts and deploys. Must live under the disk `mountPath` below.
+      - key: DATABASE_PATH
+        value: /var/data/sentinelgate.db
+    # Persistent disk for durable SQLite storage (paid plans only).
+    disk:
+      name: sentinelgate-data
+      mountPath: /var/data
+      sizeGB: 1

@@ -1,0 +1,19 @@
+.env
+.env.*
+!.env.example
+!.env.*.example
+# Non-secret: relative API base for the single-service production build.
+!.env.production
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+dist/
+backend/data/*.db
+backend/data/*.db-*
+.cache/
+.huggingface/
+.DS_Store

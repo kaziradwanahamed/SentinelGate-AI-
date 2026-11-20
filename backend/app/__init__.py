@@ -1,0 +1,1 @@
+"""SentinelGate AI backend package."""

@@ -1,0 +1,5 @@
+-r requirements.txt
+# Optional: install only when you want the Hugging Face prompt-injection classifier.
+# This is a separate classifier signal, not the authorization engine.
+torch>=2.4
+transformers>=4.44
